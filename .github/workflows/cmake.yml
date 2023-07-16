@@ -28,4 +28,4 @@ jobs:
 
     - name: Test
       working-directory: ${{github.workspace}}/build
-      run: make check
+      run: make test

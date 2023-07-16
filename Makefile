@@ -1,3 +1,5 @@
+.DEFAULT_GOAL := all
+
 .PHONY: build run clean check
 
 build:
@@ -17,4 +19,8 @@ check:
 		echo "Files are different"; \
 	fi
 
-all: clean build run check
+test: 
+	run check
+
+all: 
+	clean build run check
