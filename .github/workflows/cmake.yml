@@ -18,7 +18,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Install Clang
-      run: sudo apt-get update && sudo apt-get install -y clang
+      run: sudo apt-get update && sudo apt-get install -y clang tree
 
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_CXX_COMPILER=/usr/bin/clang++
@@ -30,6 +30,7 @@ jobs:
       working-directory: ${{github.workspace}}/
       run: |
         echo ${PWD}
+        tree -L 2
         ./build/Debug/myProg ./fileToCopy.txt out.txt
         FC fileToCopy.txt build/out.txt > build/comparing_log.txt 2>&1
         if [ "$$?" -eq 0 ]; then
