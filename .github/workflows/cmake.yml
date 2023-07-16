@@ -27,5 +27,12 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
     - name: Test
-      working-directory: ${{github.workspace}}/build
-      run: make test
+      working-directory: ${{github.workspace}}/
+      run: |
+        ./build/Debug/myProg ./fileToCopy.txt out.txt
+        FC fileToCopy.txt build/out.txt > build/comparing_log.txt 2>&1
+        if [ "$$?" -eq 0 ]; then
+          echo "Files are equal"
+        else
+          echo "Files are different"
+        fi
