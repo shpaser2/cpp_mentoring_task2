@@ -29,6 +29,7 @@ jobs:
     - name: Test
       working-directory: ${{github.workspace}}/
       run: |
+        echo ${PWD}
         ./build/Debug/myProg ./fileToCopy.txt out.txt
         FC fileToCopy.txt build/out.txt > build/comparing_log.txt 2>&1
         if [ "$$?" -eq 0 ]; then
