@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := all
 
-.PHONY: build run clean check
+.PHONY: build run clean check test
 
 build:
 	mkdir -p build && cd build && cmake ../. && cmake --build .
