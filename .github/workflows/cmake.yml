@@ -17,10 +17,12 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Install Clang++ 16
+    - name: Download and Install Clang 16
       run: |
-        sudo apt-get update
-        sudo apt-get install -y clang++-16
+        wget -O llvm.tar.xz https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.1/clang+llvm-12.0.1-x86_64-linux-gnu-ubuntu-22.04.tar.xz
+        tar -xf llvm.tar.xz
+        export PATH=$(pwd)/clang+llvm-12.0.1-x86_64-linux-gnu-ubuntu-22.04/bin:$PATH
+        echo "::add-path::$(pwd)/clang+llvm-12.0.1-x86_64-linux-gnu-ubuntu-22.04/bin"
 
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_CXX_COMPILER=/usr/bin/clang-16
