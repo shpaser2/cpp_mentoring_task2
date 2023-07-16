@@ -19,10 +19,10 @@ jobs:
 
     - name: Download and Install Clang 16
       run: |
-        wget -O llvm.tar.xz https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.1/clang+llvm-12.0.1-x86_64-linux-gnu-ubuntu-22.04.tar.xz
-        tar -xf llvm.tar.xz
-        export PATH=$(pwd)/clang+llvm-12.0.1-x86_64-linux-gnu-ubuntu-22.04/bin:$PATH
-        echo "::add-path::$(pwd)/clang+llvm-12.0.1-x86_64-linux-gnu-ubuntu-22.04/bin"
+        wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+        echo "deb http://apt.llvm.org/$(lsb_release -cs)/ llvm-toolchain-$(lsb_release -cs)-16 main" | sudo tee /etc/apt/sources.list.d/llvm.list
+        sudo apt-get update
+        sudo apt-get install -y clang-16
 
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_CXX_COMPILER=/usr/bin/clang-16
