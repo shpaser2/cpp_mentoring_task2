@@ -6,7 +6,7 @@ project(myProg CXX)
 set(CMAKE_BUILD_TYPE Release)
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_COMPILER "C:/LLVM/bin/clang++")
+set(CMAKE_CXX_COMPILER $ENV{CXX})
 
 set(SOURCES
     main.cpp
