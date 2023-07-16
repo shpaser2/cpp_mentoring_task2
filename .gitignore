@@ -1,7 +1,7 @@
 build/
-!fileToCopy.txt 
-!CMakeLists.txt
 *.txt 
 *.txt.save
+!fileToCopy.txt 
+!CMakeLists.txt
 .vs
 .vscode
