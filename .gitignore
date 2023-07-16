@@ -1,0 +1,7 @@
+build/
+!fileToCopy.txt 
+!CMakeLists.txt
+*.txt 
+*.txt.save
+.vs
+.vscode
