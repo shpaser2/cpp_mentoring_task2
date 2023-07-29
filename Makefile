@@ -4,13 +4,13 @@ build:
 	mkdir -p build && cd build && cmake ../. && cmake --build .
 
 run: build
-	cd build && ./Debug/myProg ./../fileToCopy.txt out.txt
+	cd build && ./myProg ./../fileToCopy.txt out.txt
 
 clean:
 	rm -rf build
 
 check:
-	@if FC fileToCopy.txt build/out.txt >"build/comparing_log.txt" 2>&1; \
+	@if diff fileToCopy.txt build/out.txt >"build/comparing_log.txt" 2>&1; \
 	then \
 		echo "Files are equal"; \
 	else \
