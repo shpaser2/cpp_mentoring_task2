@@ -21,8 +21,9 @@ const std::string mutex_w_name = "shared_mutex_b";
 struct shared_buffer{
     std::unique_ptr<bip::named_mutex> mtx;
     std::unique_ptr<bip::named_condition> cv;
-    std::unique_ptr<bip::managed_shared_memory> managed_shm;//{open_or_create, "shm", 1024};
-    std::array<char,2048> *array;
+    // std::unique_ptr<bip::managed_shared_memory> managed_shm;//{open_or_create, "shm", 1024};
+    bip::managed_shared_memory managed_shm;//{open_or_create, "shm", 1024};
+    std::array<char,20> *array;
 };
 
 shared_buffer make_shared_buffer(const std::string& name) {
@@ -36,19 +37,24 @@ shared_buffer make_shared_buffer(const std::string& name) {
             bip::open_or_create, ("shared_cv_" + name).c_str()
     );
     printf("333333333333333333333\n");
-    b.managed_shm = std::make_unique<bip::managed_shared_memory>(
+    // b.managed_shm = std::make_unique<bip::managed_shared_memory>(
+    //         bip::open_or_create, ("shared_memory_" + name).c_str(),
+    //         2048
+    // );
+    b.managed_shm = bip::managed_shared_memory(
             bip::open_or_create, ("shared_memory_" + name).c_str(), 
             2048
-    );
+        );
     // b.managed_shm(bip::open_or_create, ("shared_memory_" + name).c_str(), 2048);
     //std::move(managed_shm);
     printf("4444444444444444444444\n");
     //TODO check that managed_shm is created and presented
 
     printf("5555555555555555555555555\n");
-    b.array = b.managed_shm->find_or_construct<std::array<char,2048>>("buffer")();
+    b.array = b.managed_shm.find_or_construct<std::array<char,20>>("buffer")();
     printf("66666666666666666666666\n");
     //TODO check that array is created
+
     return std::move(b);
     //TODO check that struct b is moved and presented after move
 }
@@ -64,11 +70,8 @@ void check_mutex_lock(const bip::scoped_lock<bip::named_mutex>& mtx_lock) {
 
 int main()
 {
-    printf("HWHWHWHWHWHWHWHHWHWHWHWHHWHWHWHWHWHHWHWHWH\n");
     shared_buffer b_a = make_shared_buffer("a");
     std::cout << "After making a \n";
-    shared_buffer b_b = make_shared_buffer("b");
-    std::cout << "After making b \n";
     std::unique_ptr<bip::named_mutex> mutex_r_ptr;
     std::unique_ptr<bip::named_mutex> mutex_w_ptr;
     bool isReader = false;
