@@ -14,17 +14,52 @@
 
 #include <memory>
 
+#include <mutex>
+#include <array>
+#include <atomic>
+#include <condition_variable>
+#include <fstream>
+
 namespace bip = boost::interprocess;
 const std::string mutex_r_name = "shared_mutex_a";
 const std::string mutex_w_name = "shared_mutex_b";
 
+const size_t BUFFER_SIZE = 4096;
+
+struct Buffer {
+    std::mutex mtx;
+    std::condition_variable cv;
+    std::array<char, 4096> data;
+    std::streamsize bytesRead {0};
+    std::atomic<bool> readyForReading {false};
+    std::atomic<bool> readyForWriting {true};
+};
+
+// // global variables
+// Buffer buffer1, buffer2;
+// std::atomic<bool> isReadingFinished {false};
 struct shared_buffer{
     std::unique_ptr<bip::named_mutex> mtx;
     std::unique_ptr<bip::named_condition> cv;
-    // std::unique_ptr<bip::managed_shared_memory> managed_shm;//{open_or_create, "shm", 1024};
-    bip::managed_shared_memory managed_shm;//{open_or_create, "shm", 1024};
-    std::array<char,20> *array;
+    bip::managed_shared_memory managed_shm; //{open_or_create, "shm", 1024};
+    std::array<char,BUFFER_SIZE> *array;
+
+/*ATTENTION! "Example 33.11. Atomic access on a managed shared memory"
+
+looks like I can create any variable right inside shm and get access to it 
+    by shm and variable name. And atomic access too.
+https://theboostcpplibraries.com/boost.interprocess-managed-shared-memory
+*/
+
+    //std::streamsize bytesRead {0};
+    // std::atomic<bool> readyForReading {false};
+    // std::atomic<bool> readyForWriting {true};
 };
+
+struct common_variables{
+
+    std::atomic<bool> isReadingFinished {false};
+}
 
 shared_buffer make_shared_buffer(const std::string& name) {
     shared_buffer b{};
@@ -37,26 +72,14 @@ shared_buffer make_shared_buffer(const std::string& name) {
             bip::open_or_create, ("shared_cv_" + name).c_str()
     );
     printf("333333333333333333333\n");
-    // b.managed_shm = std::make_unique<bip::managed_shared_memory>(
-    //         bip::open_or_create, ("shared_memory_" + name).c_str(),
-    //         2048
-    // );
     b.managed_shm = bip::managed_shared_memory(
             bip::open_or_create, ("shared_memory_" + name).c_str(), 
             2048
         );
-    // b.managed_shm(bip::open_or_create, ("shared_memory_" + name).c_str(), 2048);
-    //std::move(managed_shm);
     printf("4444444444444444444444\n");
-    //TODO check that managed_shm is created and presented
-
-    printf("5555555555555555555555555\n");
     b.array = b.managed_shm.find_or_construct<std::array<char,20>>("buffer")();
-    printf("66666666666666666666666\n");
-    //TODO check that array is created
-
+    printf("5555555555555555555555555\n");
     return std::move(b);
-    //TODO check that struct b is moved and presented after move
 }
 
 // Debug function to find out whether the mutex is still held or not.
